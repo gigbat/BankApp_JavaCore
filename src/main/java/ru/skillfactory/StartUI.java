@@ -58,7 +58,7 @@ public class StartUI {
             BankAccount bankAccount = new BankAccount("",password,login);
             rsl = String.valueOf(bankService.getRequisiteIfPresent(bankAccount));
 
-            if (rsl.length() == 12) {
+            if (rsl.length() >= 12) {
                 authComplete = true;
             } else {
                 authComplete = false;
