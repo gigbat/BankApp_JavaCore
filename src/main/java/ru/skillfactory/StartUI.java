@@ -2,6 +2,9 @@ package ru.skillfactory;
 
 import ru.skillfactory.actions.*;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 /**
  * Класс, который запускает общение с пользователем.
  */
@@ -56,15 +59,30 @@ public class StartUI {
             String password = input.askStr("Ваш password: ");
 
             BankAccount bankAccount = new BankAccount("",password,login);
-            rsl = String.valueOf(bankService.getRequisiteIfPresent(bankAccount));
+            rsl = regex(String.valueOf(bankService.getRequisiteIfPresent(bankAccount)));
 
-            if (rsl.length() >= 12) {
+            System.out.println("Вы зашли под реквизитами: " + rsl);
+
+            if (rsl.length() == 12) {
                 authComplete = true;
             } else {
                 authComplete = false;
             }
         }
         return rsl;
+    }
+
+    public static String regex(String optionalString) {
+        Pattern pattern = Pattern.compile("\\d+");
+        Matcher matcher = pattern.matcher(optionalString);
+
+        String result = "";
+
+        while (matcher.find()) {
+            result = matcher.group();
+        }
+
+        return result;
     }
 
     /**
