@@ -56,7 +56,13 @@ public class StartUI {
             String password = input.askStr("Ваш password: ");
 
             BankAccount bankAccount = new BankAccount("",password,login);
-            authComplete = bankService.getRequisiteIfPresent(bankAccount);
+            rsl = String.valueOf(bankService.getRequisiteIfPresent(bankAccount));
+
+            if (rsl.length() == 12) {
+                authComplete = true;
+            } else {
+                authComplete = false;
+            }
         }
         return rsl;
     }

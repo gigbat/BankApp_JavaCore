@@ -37,7 +37,7 @@ public class BankService {
      *         если передоваемого пользователя нету или пароль не совпадает вы сможете
      *         передать пустой объект Optional и проверить что он не пуст.
      */
-    public boolean getRequisiteIfPresent(BankAccount bankAccount) {
+    public Optional<String> getRequisiteIfPresent(BankAccount bankAccount) {
         Optional<BankAccount> opt = Optional.ofNullable(null);
         for (Map.Entry<String, BankAccount> entry:
              accounts.entrySet()) {
@@ -46,12 +46,7 @@ public class BankService {
             }
         }
 
-        if (opt.isPresent()) {
-            opt.get().setAccept(true);
-            return opt.get().getAccept();
-        } else {
-            return opt.get().getAccept();
-        }
+        return Optional.ofNullable(opt.get().getRequisite());
     }
 
     /**
