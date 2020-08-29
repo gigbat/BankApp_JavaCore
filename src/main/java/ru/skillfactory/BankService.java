@@ -3,6 +3,7 @@ package ru.skillfactory;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Scanner;
 
 /**
  * BankService - класс, который нарушает принцип единственной ответственности. У нас он сразу
@@ -53,11 +54,11 @@ public class BankService {
      * Метод кол-во средств на передаваемых реквизитах. На этом методе вам нужно выкидывать исключение,
      * если передаваемые реквизиты не валидны, это единственный способ сообщить о проблеме.
      *
-     * @param requisite реквизиты, строка в произвольном формате.
+     * @param amount передаваемый счёт, строка в произвольном формате.
      * @return кол-во средств в копейках (для других валют аналогично было бы).
      */
-    public long balance(String requisite) {
-        return 0;
+    public long balance(long amount) {
+        return amount;
     }
 
     /**
@@ -68,22 +69,49 @@ public class BankService {
      * @return возвращает true если баланс был увеличен.
      */
     public boolean topUpBalance(String requisite, long amount) {
-        return false;
+        boolean topUp = false;
+
+        for (Map.Entry<String, BankAccount> entry : accounts.entrySet()) {
+            if (entry.getKey().equals(requisite)) {
+                entry.getValue().setBalance(amount);
+                topUp = true;
+                break;
+            }
+        }
+        return topUp;
     }
 
     /**
      * Метод, если все условия соблюдены, переводит средства с одного счёта на другой.
      *
-     * @param username строка в произвольном формате.
-     * @param password строка в произвольном формате.
      * @param srcRequisite реквизиты, строка в произвольном формате.
-     * @param destRequisite реквизиты, строка в произвольном формате.
-     * @param amount кол-во средств в копейках (для других валют аналогично было бы).
      * @return true если выполнены все условия, средства фактически переведены.
      */
-    public boolean transferMoney(String username, String password, String srcRequisite,
-                                 String destRequisite, long amount) {
+    public boolean transferMoney(String srcRequisite) {
         boolean rsl = false;
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.print("Введите реквизиты получателя: ");
+        String destRequisite = scanner.nextLine();
+
+        System.out.print("Введите сумму пополнения: ");
+        long amount = Long.parseLong(scanner.nextLine());
+
+        for (Map.Entry<String, BankAccount> srcEntry : accounts.entrySet()) {
+            if (srcEntry.getKey().equals(srcRequisite)) {
+                for (Map.Entry<String, BankAccount> dstEntry : accounts.entrySet()) {
+                    if (dstEntry.getKey().equals(destRequisite)) {
+                        dstEntry.getValue().setBalance(balance(amount));
+                        rsl = true;
+                        break;
+                    }
+                }
+            }
+        }
         return rsl;
+    }
+
+    public Map<String, BankAccount> getAccounts() {
+        return accounts;
     }
 }

@@ -85,7 +85,7 @@ public class BankAccount {
      * Сеттер balance.
      */
     public void setBalance(long balance) {
-        this.balance = balance;
+        this.balance += balance;
     }
 
     /**

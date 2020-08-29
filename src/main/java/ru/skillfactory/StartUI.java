@@ -2,6 +2,9 @@ package ru.skillfactory;
 
 import ru.skillfactory.actions.*;
 
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -31,12 +34,51 @@ public class StartUI {
                 // Мы обращаемся к листу и запускаем один из статических методов, которые мы хранили в листе.
                 run = actions[select].execute(bankService, input, requisite);
                 // Ниже нужно реализовать метод authorization(BankService bankService, Input input)????
+                getAccount(requisite, bankService, select);
             } else {
                 System.out.println("Такого пункта нету...");
             }
         }
     }
 
+    public void getAccount(String requisite, BankService bankService, int select) {
+        Scanner scanner = new Scanner(System.in);
+        for(Map.Entry<String, BankAccount> entry : bankService.getAccounts().entrySet()) {
+
+            if (select == 0) {
+
+                if (entry.getKey().equals(requisite)) {
+                    System.out.println("Баланс: " + entry.getValue().getBalance() + " по реквизитам: "
+                            + entry.getValue().getRequisite());
+                    break;
+                }
+
+            } else if (select == 1) {
+                System.out.print("Введите сумму для пополнения: ");
+                long amount = Long.parseLong(scanner.nextLine());
+
+                if (bankService.topUpBalance(requisite, amount)) {
+                    System.out.println("Баланс успешно пополнен!");
+                    break;
+                }
+
+            } else if (select == 2) {
+
+                if (bankService.transferMoney(entry.getKey())) {
+                    System.out.println("Средства успешно переведены!");
+                    break;
+                }
+
+            } else if (select == 3) {
+                System.out.println("Выход с программы.");
+                break;
+            } else {
+
+                throw new NoSuchElementException();
+
+            }
+        }
+    }
 
     /**
      * Метод должен работать пока пользователь не авторизуется (пока отключил цикл!).
@@ -63,7 +105,7 @@ public class StartUI {
 
             System.out.println("Вы зашли под реквизитами: " + rsl);
 
-            if (rsl.length() == 12) {
+            if (rsl.length() >= 12) {
                 authComplete = true;
             } else {
                 authComplete = false;
