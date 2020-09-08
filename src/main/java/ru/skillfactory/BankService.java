@@ -26,7 +26,17 @@ public class BankService {
      * @param account Аккаунт с заполненными полями.
      */
     public void addAccount(BankAccount account) {
-        accounts.put(account.getRequisite(), account);
+        if (accounts.size() == 0) {
+            accounts.put(account.getRequisite(), account);
+        } else {
+            for (BankAccount entry : accounts.values()) {
+                if (entry.getRequisite() == account.getRequisite()) {
+                    System.out.println("Пользователь с такими реквизитами уже существует.");
+                } else {
+                    accounts.put(account.getRequisite(), account);
+                }
+            }
+        }
     }
 
     /**
@@ -39,10 +49,10 @@ public class BankService {
      *         передать пустой объект Optional и проверить что он не пуст.
      */
     public Optional<String> getRequisiteIfPresent(BankAccount bankAccount) {
-        Optional<BankAccount> opt = Optional.ofNullable(null);
-        for (Map.Entry<String, BankAccount> entry:
-             accounts.entrySet()) {
-            if (entry.getValue().equals(bankAccount)) {
+        Optional<BankAccount> opt = Optional.empty();
+        for (BankAccount entry:
+             accounts.values()) {
+            if (entry.equals(bankAccount)) {
                 opt = Optional.ofNullable(bankAccount);
             }
         }
