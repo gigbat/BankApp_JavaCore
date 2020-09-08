@@ -102,7 +102,7 @@ public class BankService {
         Scanner scanner = new Scanner(System.in);
 
         System.out.print("Введите реквизиты получателя: ");
-        String destRequisite = scanner.nextLine();
+        long destRequisite = Long.parseLong(scanner.nextLine());
 
         System.out.print("Введите сумму пополнения: ");
         long amount = Long.parseLong(scanner.nextLine());
@@ -110,8 +110,8 @@ public class BankService {
         for (Map.Entry<String, BankAccount> srcEntry : accounts.entrySet()) {
             if (srcEntry.getKey().equals(srcRequisite)) {
                 for (Map.Entry<String, BankAccount> dstEntry : accounts.entrySet()) {
-                    if (dstEntry.getKey().equals(destRequisite)) {
-                        dstEntry.getValue().setBalance(balance(amount));
+                    if (dstEntry.getKey().equals(balance(destRequisite))) {
+                        dstEntry.getValue().setBalance(amount);
                         rsl = true;
                         break;
                     }
