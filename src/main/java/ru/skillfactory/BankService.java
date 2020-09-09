@@ -1,9 +1,6 @@
 package ru.skillfactory;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Scanner;
+import java.util.*;
 
 /**
  * BankService - класс, который нарушает принцип единственной ответственности. У нас он сразу
@@ -26,16 +23,17 @@ public class BankService {
      * @param account Аккаунт с заполненными полями.
      */
     public void addAccount(BankAccount account) {
-        if (accounts.size() == 0) {
-            accounts.put(account.getRequisite(), account);
-        } else {
-            for (BankAccount entry : accounts.values()) {
-                if (entry.getRequisite() == account.getRequisite()) {
-                    System.out.println("Пользователь с такими реквизитами уже существует.");
-                } else {
-                    accounts.put(account.getRequisite(), account);
-                }
-            }
+        accounts.put(account.getRequisite(), account);
+
+        Set<String> keys = accounts.keySet();
+
+        Iterator<String> keyIter = keys.iterator();
+
+        while (keyIter.hasNext()) {
+            String key = keyIter.next();
+            BankAccount value = accounts.get(key);
+
+            accounts.put(value.getRequisite(), value);
         }
     }
 
@@ -45,13 +43,13 @@ public class BankService {
      *
      * @param bankAccount валидный аккаунт.
      * @return возвращает объект Optional, который будет содержат строку - requisite,
-     *         если передоваемого пользователя нету или пароль не совпадает вы сможете
-     *         передать пустой объект Optional и проверить что он не пуст.
+     * если передоваемого пользователя нету или пароль не совпадает вы сможете
+     * передать пустой объект Optional и проверить что он не пуст.
      */
     public Optional<String> getRequisiteIfPresent(BankAccount bankAccount) {
         Optional<BankAccount> opt = Optional.empty();
-        for (BankAccount entry:
-             accounts.values()) {
+        for (BankAccount entry :
+                accounts.values()) {
             if (entry.equals(bankAccount)) {
                 opt = Optional.ofNullable(bankAccount);
             }
@@ -75,15 +73,15 @@ public class BankService {
      * Метод должен пополнять баланс.
      *
      * @param requisite реквизиты, строка в произвольном формате.
-     * @param amount сумма для пополнения.
+     * @param amount    сумма для пополнения.
      * @return возвращает true если баланс был увеличен.
      */
     public boolean topUpBalance(String requisite, long amount) {
         boolean topUp = false;
 
-        for (Map.Entry<String, BankAccount> entry : accounts.entrySet()) {
-            if (entry.getKey().equals(requisite)) {
-                entry.getValue().setBalance(amount);
+        for (BankAccount entry : accounts.values()) {
+            if (entry.getRequisite().equals(requisite)) {
+                entry.setBalance(amount);
                 topUp = true;
                 break;
             }
@@ -94,34 +92,51 @@ public class BankService {
     /**
      * Метод, если все условия соблюдены, переводит средства с одного счёта на другой.
      *
-     * @param srcRequisite реквизиты, строка в произвольном формате.
+     * @param username      строка в произвольном формате.
+     * @param password      строка в произвольном формате.
+     * @param srcRequisite  реквизиты, строка в произвольном формате.
+     * @param destRequisite реквизиты, строка в произвольном формате.
+     * @param amount        кол-во средств в копейках (для других валют аналогично было бы).
      * @return true если выполнены все условия, средства фактически переведены.
      */
-    public boolean transferMoney(String srcRequisite) {
+    public boolean transferMoney(String username, String password, String srcRequisite,
+                                 String destRequisite, long amount) {
         boolean rsl = false;
-        Scanner scanner = new Scanner(System.in);
 
-        System.out.print("Введите реквизиты получателя: ");
-        long destRequisite = Long.parseLong(scanner.nextLine());
-
-        System.out.print("Введите сумму пополнения: ");
-        long amount = Long.parseLong(scanner.nextLine());
-
-        for (Map.Entry<String, BankAccount> srcEntry : accounts.entrySet()) {
-            if (srcEntry.getKey().equals(srcRequisite)) {
-                for (Map.Entry<String, BankAccount> dstEntry : accounts.entrySet()) {
-                    if (dstEntry.getKey().equals(balance(destRequisite))) {
-                        dstEntry.getValue().setBalance(amount);
+        for (BankAccount srcEntry : accounts.values()) {
+            if (srcEntry.getRequisite().equals(srcRequisite) &&
+                    srcEntry.getPassword().equals(password)) {
+                for (BankAccount dstEntry : accounts.values()) {
+                    if (Long.parseLong(dstEntry.getRequisite()) == balance(Long.parseLong(destRequisite)) &&
+                            dstEntry.getUsername().equals(username)) {
+                        dstEntry.setBalance(amount);
                         rsl = true;
                         break;
                     }
                 }
             }
         }
-        return rsl;
+
+        if (rsl) {
+            return rsl;
+        } else {
+            throw new NullPointerException();
+        }
     }
 
-    public Map<String, BankAccount> getAccounts() {
-        return accounts;
+    public long getBalanceForAccount(String requisites) {
+        for (BankAccount bankAccount : accounts.values()) {
+            if (bankAccount.getRequisite().equals(requisites)) {
+                return bankAccount.getBalance();
+            }
+        }
+
+        return 0;
+    }
+
+    public void showTest() {
+        for(BankAccount bankAccount : accounts.values()) {
+            System.out.println(bankAccount.getRequisite() + "\t" + bankAccount.getPassword() + "\t" + bankAccount.getUsername());
+        }
     }
 }

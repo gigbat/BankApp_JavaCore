@@ -29,8 +29,6 @@ public class BankAccount {
      */
     private final String requisite;
 
-    private boolean accept = false;
-
     /**
      * Аккаунт со всеми полями. Можно создать другие, но смотрите чтобы в BankService позже не было проблем
      * с аккаунтами у которых не все поля инициализированные.
@@ -117,14 +115,5 @@ public class BankAccount {
         int result = password != null ? password.hashCode() : 0;
         result = 31 * result + (requisite != null ? requisite.hashCode() : 0);
         return result;
-    }
-
-    public boolean getAccept() {
-        return accept;
-    }
-
-    public Optional<BankAccount> setAccept(boolean accept) {
-        this.accept = accept;
-        return null;
     }
 }

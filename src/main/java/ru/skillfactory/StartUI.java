@@ -15,13 +15,13 @@ public class StartUI {
 
     /**
      * Здесь будет происходить инициализация меню, вы
-     *  1. Авторизовываете пользователя.
-     *  2. Печатаете меню.
-     *  3. В зависимости от введённого числа запускаете нужную функцию.
+     * 1. Авторизовываете пользователя.
+     * 2. Печатаете меню.
+     * 3. В зависимости от введённого числа запускаете нужную функцию.
      *
      * @param bankService BankService объект.
-     * @param actions массив с действиями.
-     * @param input Input объект.
+     * @param actions     массив с действиями.
+     * @param input       Input объект.
      */
     public void init(BankService bankService, UserAction[] actions, Input input) {
         String requisite = authorization(bankService, input);
@@ -43,40 +43,41 @@ public class StartUI {
 
     public void getAccount(String requisite, BankService bankService, int select) {
         Scanner scanner = new Scanner(System.in);
-        for(Map.Entry<String, BankAccount> entry : bankService.getAccounts().entrySet()) {
 
-            if (select == 0) {
+        if (select == 0) {
+            System.out.println("Баланс: " + bankService.getBalanceForAccount(requisite));
+        } else if (select == 1) {
+            System.out.print("Введите сумму для пополнения: ");
+            long amount = Long.parseLong(scanner.nextLine());
 
-                if (entry.getKey().equals(requisite)) {
-                    System.out.println("Баланс: " + entry.getValue().getBalance() + " по реквизитам: "
-                            + entry.getValue().getRequisite());
-                    break;
-                }
+            if (bankService.topUpBalance(requisite, amount)) {
+                System.out.println("Баланс успешно пополнен!");
+            }
+        } else if (select == 2) {
+            try {
+                System.out.print("Введите имя получателя: ");
+                String username = scanner.nextLine();
 
-            } else if (select == 1) {
-                System.out.print("Введите сумму для пополнения: ");
+                System.out.print("Подтвердите ваш пароль: ");
+                String password = scanner.nextLine();
+
+                System.out.print("Введите реквизиты получателя: ");
+                String destRequisite = scanner.nextLine();
+
+                System.out.print("Введите сумму пополнения: ");
                 long amount = Long.parseLong(scanner.nextLine());
 
-                if (bankService.topUpBalance(requisite, amount)) {
-                    System.out.println("Баланс успешно пополнен!");
-                    break;
-                }
-
-            } else if (select == 2) {
-
-                if (bankService.transferMoney(entry.getKey())) {
+                if (bankService.transferMoney(username, password, requisite, destRequisite, amount)) {
                     System.out.println("Средства успешно переведены!");
-                    break;
                 }
-
-            } else if (select == 3) {
-                System.out.println("Выход с программы.");
-                break;
-            } else {
-
-                throw new NoSuchElementException();
-
+            } catch (NullPointerException e) {
+                System.out.println("Такого пользователя не существует.");
             }
+
+        } else if (select == 3) {
+            System.out.println("Выход с программы.");
+        } else {
+            throw new NoSuchElementException();
         }
     }
 
@@ -84,9 +85,9 @@ public class StartUI {
      * Метод должен работать пока пользователь не авторизуется (пока отключил цикл!).
      *
      * @param bankService BankService объект.
-     * @param input Input объект.
+     * @param input       Input объект.
      * @return возвращает реквизиты аккаунта, под которым авторизовался пользователь.
-     *         Получайте их вызывом метода getRequisiteIfPresent, класса BankService.
+     * Получайте их вызывом метода getRequisiteIfPresent, класса BankService.
      */
     private String authorization(BankService bankService, Input input) {
         String rsl = null;
@@ -100,7 +101,7 @@ public class StartUI {
             String login = input.askStr("Ваш логин: ");
             String password = input.askStr("Ваш password: ");
 
-            BankAccount bankAccount = new BankAccount("",password,login);
+            BankAccount bankAccount = new BankAccount("", password, login);
             rsl = regex(String.valueOf(bankService.getRequisiteIfPresent(bankAccount)));
 
             System.out.println("Вы зашли под реквизитами: " + rsl);
