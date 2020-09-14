@@ -3,7 +3,7 @@ package ru.skillfactory.actions;
 import ru.skillfactory.*;
 
 /**
- * Класс для реализации действия "Показать баланс", используется в StartUI.
+ * Класс для реализации действия "Показать баланс".
  */
 public class ShowBalanceAction implements UserAction {
 
@@ -13,9 +13,7 @@ public class ShowBalanceAction implements UserAction {
     }
 
     /**
-     * В этом методе обращайтесь к банковскому сервису, уточняйте у пользователя на сколько он хочет
-     * пополнить баланс, каким способом... печатайте результат, может быть баланс после пополнения
-     * (на ваше усмотрение).
+     * Метод, который относится к показу баланса. При вызове отправляет его на выполнение.
      *
      * @param bankService BankService объект.
      * @param input Input объект.

@@ -3,7 +3,7 @@ package ru.skillfactory.actions;
 import ru.skillfactory.*;
 
 /**
- * Класс для реализации действия "Выйти из программы", используется в StartUI.
+ * Класс для реализации действия "Выйти из программы".
  */
 public class Exit implements UserAction {
 
@@ -13,8 +13,8 @@ public class Exit implements UserAction {
     }
 
     /**
-     * Метод обработает завершение работы нашего приложение и возвратит true, что
-     * должно в StartUI привести к завершению работы.
+     * Метод, который относится к завершению программы. При вызове отправляет его на выполнение и завершает
+     * работу программы.
      *
      * @param bankService BankService объект.
      * @param input Input объект.

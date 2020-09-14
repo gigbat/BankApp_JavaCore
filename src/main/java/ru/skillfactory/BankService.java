@@ -1,34 +1,28 @@
 package ru.skillfactory;
 
-import java.util.*;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 
 /**
- * BankService - класс, который нарушает принцип единственной ответственности. У нас он сразу
- * и хранит аккаунты, и реализует логику проверки баланса и переводов. Можете использовать
- * его в текущем виде, можете решить проблему множественной ответственности и создать интерфейс
- * AccountStore, написать его реализации и в BankService передавать хранилище. В этом случае в
- * этом классе должна быть только логика переводов + баланс и вы просто обращаетесь в store, передовая
- * ответ на уровень выше.
+ * BankService - класс, который хранит аккаунты, и реализует логику проверки баланса и переводов.
  */
 public class BankService {
     /**
-     * В Map-е храните аккаунты, ключ это реквизиты
+     * В Map-е хранятся аккаунты пользователей банка.
      */
     private Map<String, BankAccount> accounts = new HashMap<>();
-
 
     public void addAccount(BankAccount account) {
         accounts.putIfAbsent(account.getRequisite(), account);
     }
 
     /**
-     * Метод проверяет что в Map-е есть аккаунт, если есть вернёт реквезиты. В моей реализации
-     * метод просто вернёт реквезиты без генерации исключений.
+     * Метод проверяет что в Map-е есть аккаунт, если есть вернёт реквезиты.
      *
      * @param bankAccount валидный аккаунт.
-     * @return возвращает объект Optional, который будет содержат строку - requisite,
-     * если передоваемого пользователя нету или пароль не совпадает вы сможете
-     * передать пустой объект Optional и проверить что он не пуст.
+     * @return возвращает объект Optional, который будет содержат строку - requisite.
      */
     public Optional<String> getRequisiteIfPresent(BankAccount bankAccount) {
         Optional<String> opt;
@@ -42,18 +36,7 @@ public class BankService {
     }
 
     /**
-     * Метод кол-во средств на передаваемых реквизитах. На этом методе вам нужно выкидывать исключение,
-     * если передаваемые реквизиты не валидны, это единственный способ сообщить о проблеме.
-     *
-     * @param amount передаваемый счёт, строка в произвольном формате.
-     * @return кол-во средств в копейках (для других валют аналогично было бы).
-     */
-    public long balance(long amount) {
-        return amount;
-    }
-
-    /**
-     * Метод должен пополнять баланс.
+     * Метод пополнения баланса.
      *
      * @param requisite реквизиты, строка в произвольном формате.
      * @param amount    сумма для пополнения.
@@ -78,8 +61,8 @@ public class BankService {
      * @param password      строка в произвольном формате.
      * @param srcRequisite  реквизиты, строка в произвольном формате.
      * @param destRequisite реквизиты, строка в произвольном формате.
-     * @param amount        кол-во средств в копейках (для других валют аналогично было бы).
-     * @return true если выполнены все условия, средства фактически переведены.
+     * @param amount        кол-во средств в копейках.
+     * @return true если выполнены все условия.
      */
     public boolean transferMoney(String username, String password, String srcRequisite,
                                  String destRequisite, long amount) {

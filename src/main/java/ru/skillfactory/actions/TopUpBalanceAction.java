@@ -3,7 +3,7 @@ package ru.skillfactory.actions;
 import ru.skillfactory.*;
 
 /**
- * Класс для реализации действия "Пополнить баланс", используется в StartUI.
+ * Класс для реализации действия "Пополнить баланс".
  */
 public class TopUpBalanceAction implements UserAction {
 
@@ -13,9 +13,7 @@ public class TopUpBalanceAction implements UserAction {
     }
 
     /**
-     * В этом методе обращайтесь к банковскому сервису, уточняйте у пользователя на сколько он хочет
-     * пополнить баланс, каким способом... печатайте результат, может быть баланс после пополнения
-     * (на ваше усмотрение).
+     * Метод, который относится к пополнению баланса. При вызове отправляет его на выполнение.
      *
      * @param bankService BankService объект.
      * @param input Input объект.

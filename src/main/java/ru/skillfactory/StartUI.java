@@ -2,7 +2,6 @@ package ru.skillfactory;
 
 import ru.skillfactory.actions.*;
 
-import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 import java.util.regex.Matcher;
@@ -14,10 +13,7 @@ import java.util.regex.Pattern;
 public class StartUI {
 
     /**
-     * Здесь будет происходить инициализация меню, вы
-     * 1. Авторизовываете пользователя.
-     * 2. Печатаете меню.
-     * 3. В зависимости от введённого числа запускаете нужную функцию.
+     * Метод инициализирующее меню.
      *
      * @param bankService BankService объект.
      * @param actions     массив с действиями.
@@ -31,9 +27,7 @@ public class StartUI {
         while (run) {
             int select = input.askInt("Выберите пункт меню: ");
             if (select >= 0 && select <= actions.length - 1) {
-                // Мы обращаемся к листу и запускаем один из статических методов, которые мы хранили в листе.
                 run = actions[select].execute(bankService, input, requisite);
-                // Ниже нужно реализовать метод authorization(BankService bankService, Input input)????
                 getAccount(requisite, bankService, select);
             } else {
                 System.out.println("Такого пункта нету...");
@@ -71,9 +65,8 @@ public class StartUI {
                     System.out.println("Средства успешно переведены!");
                 }
             } catch (NullPointerException e) {
-                System.out.println("Такого пользователя не существует.");
+                System.err.println("Такого пользователя не существует.");
             }
-
         } else if (select == 3) {
             System.out.println("Выход с программы.");
         } else {
@@ -82,22 +75,16 @@ public class StartUI {
     }
 
     /**
-     * Метод должен работать пока пользователь не авторизуется (пока отключил цикл!).
+     * Метод для авторизации пользователя.
      *
      * @param bankService BankService объект.
      * @param input       Input объект.
      * @return возвращает реквизиты аккаунта, под которым авторизовался пользователь.
-     * Получайте их вызывом метода getRequisiteIfPresent, класса BankService.
      */
     private String authorization(BankService bankService, Input input) {
         String rsl = null;
         boolean authComplete = false;
-        while (!authComplete) { // цикл отключён!!!
-            /*
-             * Запрашиваете у пользователя логин, пароль пока он не пройдёт авторизацию.
-             * Авторизация пройдена при условие что в BankService есть пользователь с
-             * данным логином и паролем (работайте только с теми пользователями что есть).
-             */
+        while (!authComplete) {
             String login = input.askStr("Ваш логин: ");
             String password = input.askStr("Ваш password: ");
 
@@ -129,7 +116,7 @@ public class StartUI {
     }
 
     /**
-     * Печатается меню пользователя (только печатается, общения с пользователем нету).
+     * Печатается меню пользователя.
      *
      * @param actions массив с действиями.
      */
@@ -142,16 +129,12 @@ public class StartUI {
 
     public static void main(String[] args) {
         BankService bankService = new BankService();
-        // здесь создадите несколько аккаунтов на проверку
-        // данные осмысленно заполните, не просто пустые строки
         bankService.addAccount(new BankAccount("Богдан", "1234", "5153655321456782"));
         bankService.addAccount(new BankAccount("Иван", "4321", "9876216526741253"));
         bankService.addAccount(new BankAccount("Сергей", "1010", "8563874390124545"));
         bankService.addAccount(new BankAccount("Сергей", "2525", "4149876523341237"));
         bankService.addAccount(new BankAccount("Богдан", "2121", "4149646523321237"));
-        // Ещё аккаунты
 
-        // Наши действия мы будет хранить в специальном листе, вызывать из этого же списка
         UserAction[] actions = {
                 new ShowBalanceAction(),
                 new TopUpBalanceAction(),
@@ -159,9 +142,7 @@ public class StartUI {
                 new Exit()
         };
 
-        // Наш Input можно менять на нужную реализацию (ValidateInput доделайте)
         Input input = new ValidateInput();
-        // Запускаем наш UI передавая аргументами банковский сервис, экшены и Input.
         new StartUI().init(bankService, actions, input);
     }
 }
