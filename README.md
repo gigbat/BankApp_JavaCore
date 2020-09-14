@@ -1,4 +1,4 @@
-#Final project
+Final project
 ---
 
 During training on the Skill Factory course, namely the Java Core module, 
@@ -8,7 +8,6 @@ During the implementation of the program, the skills of understanding the princi
 input/output, exception handling, interface and generics were improved.
 
 ## What was in the project been using?
----
 
 The project used a service method to add a client to the card 
 and the main method of the client who authorized the account. 
@@ -30,7 +29,6 @@ After successful authorization, the user can log into his account and perform 3 
 </ul>
 
 ## What data structures were used in the project?
----
 
 The most priority for the task was to use HashMap. 
 HashMap is a good option because every requisite as a key, and every bank account is a value. 
@@ -45,7 +43,6 @@ in the table of sets. And in order to set the desired value or find out whether 
 exists in the system, you do not need to iterate over all the values.
  
 ##Design patterns.
----
 
 The code uses design patterns:
 
