@@ -16,25 +16,9 @@ public class BankService {
      */
     private Map<String, BankAccount> accounts = new HashMap<>();
 
-    /**
-     * Метод добавляете аккаунт в Map-у если у аккаунта уникальные реквизиты (логин тоже нужно проверить,
-     * чтобы корректно работал метод contains).
-     *
-     * @param account Аккаунт с заполненными полями.
-     */
+
     public void addAccount(BankAccount account) {
-        accounts.put(account.getRequisite(), account);
-
-        Set<String> keys = accounts.keySet();
-
-        Iterator<String> keyIter = keys.iterator();
-
-        while (keyIter.hasNext()) {
-            String key = keyIter.next();
-            BankAccount value = accounts.get(key);
-
-            accounts.put(value.getRequisite(), value);
-        }
+        accounts.putIfAbsent(account.getRequisite(), account);
     }
 
     /**
@@ -47,15 +31,14 @@ public class BankService {
      * передать пустой объект Optional и проверить что он не пуст.
      */
     public Optional<String> getRequisiteIfPresent(BankAccount bankAccount) {
-        Optional<BankAccount> opt = Optional.empty();
-        for (BankAccount entry :
-                accounts.values()) {
-            if (entry.equals(bankAccount)) {
-                opt = Optional.ofNullable(bankAccount);
-            }
+        Optional<String> opt;
+        BankAccount account = accounts.get(bankAccount.getRequisite());
+        if (account != null) {
+            opt = Optional.ofNullable(bankAccount.getRequisite());
+        } else {
+            opt = Optional.empty();
         }
-
-        return Optional.ofNullable(opt.get().getRequisite());
+        return opt;
     }
 
     /**
@@ -78,14 +61,13 @@ public class BankService {
      */
     public boolean topUpBalance(String requisite, long amount) {
         boolean topUp = false;
+        BankAccount bankAccount = accounts.get(requisite);
 
-        for (BankAccount entry : accounts.values()) {
-            if (entry.getRequisite().equals(requisite)) {
-                entry.setBalance(amount);
-                topUp = true;
-                break;
-            }
+        if (bankAccount != null) {
+            bankAccount.setBalance(amount);
+            topUp = true;
         }
+
         return topUp;
     }
 
@@ -102,36 +84,24 @@ public class BankService {
     public boolean transferMoney(String username, String password, String srcRequisite,
                                  String destRequisite, long amount) {
         boolean rsl = false;
+        BankAccount srcAccount = accounts.get(srcRequisite);
+        BankAccount destAccount = accounts.get(destRequisite);
 
-        for (BankAccount srcEntry : accounts.values()) {
-            if (srcEntry.getRequisite().equals(srcRequisite) &&
-                    srcEntry.getPassword().equals(password)) {
-                for (BankAccount dstEntry : accounts.values()) {
-                    if (Long.parseLong(dstEntry.getRequisite()) == balance(Long.parseLong(destRequisite)) &&
-                            dstEntry.getUsername().equals(username)) {
-                        dstEntry.setBalance(amount);
-                        rsl = true;
-                        break;
-                    }
-                }
+        if (srcAccount != null && srcAccount.getPassword().equals(password)) {
+            if (destAccount != null && destAccount.getUsername().equals(username)) {
+                destAccount.setBalance(amount);
+                rsl = true;
+            } else {
+                throw new NullPointerException();
             }
         }
 
-        if (rsl) {
-            return rsl;
-        } else {
-            throw new NullPointerException();
-        }
+        return rsl;
     }
 
     public long getBalanceForAccount(String requisites) {
-        for (BankAccount bankAccount : accounts.values()) {
-            if (bankAccount.getRequisite().equals(requisites)) {
-                return bankAccount.getBalance();
-            }
-        }
-
-        return 0;
+        BankAccount bankAccount = accounts.get(requisites);
+        return bankAccount.getBalance();
     }
 
     public void showTest() {
